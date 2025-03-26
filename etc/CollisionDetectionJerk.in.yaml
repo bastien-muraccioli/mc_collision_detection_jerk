@@ -1,0 +1,15 @@
+---
+collision_detection_jerk:
+  imuBodyName: "Accelerometer"
+  robotBodyName: "FT_sensor_mounting"
+
+  threshold_offset_base: [15000.0, 15000.0, 15000.0]
+  threshold_filtering_base: 0.005
+  threshold_offset_vel: [15000.0, 15000.0, 15000.0]
+  threshold_filtering_vel: 0.005
+
+  k_vel: 2.0
+  alpha_rot_vel: 5.0
+  alpha_v: 1.0
+  alpha_acc: 1445.0
+  alpha_jerk_vel: 100.0
