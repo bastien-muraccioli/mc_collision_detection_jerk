@@ -23,9 +23,6 @@ void CollisionDetectionJerk::init(mc_control::MCGlobalController & controller, c
   }
 
   auto plugin_config = config("collision_detection_jerk");
-  // k_ = plugin_config("k", 1.0);
-  // alpha_rot_ = plugin_config("alpha_rot", 1.0);
-  // alpha_jerk_ = plugin_config("alpha_jerk", 1.0);
 
   k_vel_ = plugin_config("k_vel", 1.0);
   alpha_rot_vel_ = plugin_config("alpha_rot_vel", 1.0);
@@ -185,21 +182,6 @@ void CollisionDetectionJerk::addGui(mc_control::MCGlobalController & controller)
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
 
   ctl.controller().gui()->addElement({"Plugins", "CollisionDetectionJerk"},
-    // mc_rtc::gui::NumberInput("k", [this]() { return k_; },
-    //   [this](double k) 
-    //   {
-    //     this->k_ = k;
-    //   }),
-    // mc_rtc::gui::NumberInput("alpha_rot", [this]() { return alpha_rot_; },
-    //   [this](double alpha_rot) 
-    //   {
-    //     this->alpha_rot_ = alpha_rot;
-    //   }),
-    // mc_rtc::gui::NumberInput("alpha_jerk", [this]() { return alpha_jerk_; },
-    //   [this](double alpha_jerk) 
-    //   {
-    //     this->alpha_jerk_ = alpha_jerk;
-    //   }),
     mc_rtc::gui::NumberInput("k_vel", [this]() { return k_vel_; },
       [this](double k_vel) 
       {
@@ -288,10 +270,6 @@ void CollisionDetectionJerk::addLog(mc_control::MCGlobalController & controller)
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_norm", [this]() { return jerk_withoutModel_.norm(); });
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_dot", [this]() { return jerk_diff_; });
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_dot_norm", [this]() { return jerk_diff_.norm(); });
-  // ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_dot", [this]() { return jerk_dot_withoutModel_; });
-  // ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_dot_norm", [this]() { return jerk_dot_withoutModel_.norm(); });
-  // ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_noFiltration", [this]() { return jerk_withoutModel_noFiltration_; });
-  // ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_noFiltration_norm", [this]() { return jerk_withoutModel_noFiltration_.norm(); });
 
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_biasGyro_vel", [this]() { return bias_gyro_vel_; });
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_biasGyro_vel_norm", [this]() { return bias_gyro_vel_.norm(); });
@@ -369,15 +347,6 @@ void CollisionDetectionJerk::addPlot(mc_control::MCGlobalController & ctl)
       mc_rtc::gui::plot::Y(
       "jerk without model - vel", [this]() { return jerk_diff_[axis_shown_]; }, mc_rtc::gui::Color::Red)
       );
-
-  // //jerk_dot_
-  // gui.addPlot(
-  //   "jerk_dot",
-  //   mc_rtc::gui::plot::X(
-  //       "t", [this]() { return counter_; }),
-  //   mc_rtc::gui::plot::Y(
-  //       "jerk_dot_biased_imu(t)", [this]() { return jerk_dot_withoutModel_.norm(); }, mc_rtc::gui::Color::Yellow)
-  //       );
 
   //omega
   gui.addPlot(
@@ -461,24 +430,6 @@ void CollisionDetectionJerk::jerkEstimationInit(mc_control::MCGlobalController &
 
   // Initialize the estimation without the model
   jerk_withoutModel_ = Eigen::Vector3d::Zero();
-  // jerk_dot_withoutModel_ = Eigen::Vector3d::Zero();
-  // jerk_withoutModel_noFiltration_ = Eigen::Vector3d::Zero();
-  // jerk_diff_baseNoModel_ = Eigen::Vector3d::Zero();
-
-  // Initialize the base estimation
-  // bias_gyro_base_ = Eigen::Vector3d::Zero();
-  // bias_gyro_dot_base_ = Eigen::Vector3d::Zero();
-  // R_base_ = R_rob_;
-  // quat_tilde_base_ = stateObservation::kine::rotationVectorToQuaternion(stateObservation::kine::rotationMatrixToRotationVector(R_rob_*R_base_.transpose()));
-  // quat_R_base_ = stateObservation::kine::rotationVectorToQuaternion(stateObservation::kine::rotationMatrixToRotationVector(R_base_));
-  // omega_base_ = Eigen::Vector3d::Zero();
-  // jerk_base_ = Eigen::Vector3d::Zero();
-  // jerk_dot_base_ = Eigen::Vector3d::Zero();
-
-  // Initialize the estimation from the QP
-  // acc_qp_ = Eigen::Vector3d::Zero();
-  // jerk_qp_ = Eigen::Vector3d::Zero();
-  // jerk_diff_baseQp_ = Eigen::Vector3d::Zero();
 
   // Initialize the estimation including the linear velocity
   bias_gyro_vel_ = Eigen::Vector3d::Zero();
@@ -500,13 +451,7 @@ void CollisionDetectionJerk::jerkEstimationInit(mc_control::MCGlobalController &
 
 void CollisionDetectionJerk::jerkEstimation(mc_control::MCGlobalController & ctl)
 {
-  // jerk_withoutModel_noFiltration_ = stateObservation::kine::skewSymmetric(gyro_) * accelero_ + accelero_dot_; // X
-  // const Eigen::Vector3d X_dot = stateObservation::kine::skewSymmetric(gyro_dot_)*accelero_ + stateObservation::kine::skewSymmetric(gyro_)*accelero_dot_ + accelero_dot_dot_;
-
-  // jerk_dot_withoutModel_ = X_dot + alpha_jerk_*(jerk_withoutModel_noFiltration_ - jerk_withoutModel_);
   jerk_withoutModel_ = stateObservation::kine::skewSymmetric(gyro_) * accelero_ + accelero_dot_;
-
-  //TODO APPLY THRESHOLD
 }
 
 void CollisionDetectionJerk::jerkEstimationWithLinearVelocity(mc_control::MCGlobalController & ctl)
@@ -523,9 +468,8 @@ void CollisionDetectionJerk::jerkEstimationWithLinearVelocity(mc_control::MCGlob
   const Eigen::Vector3d omega_dot_vel = (omega_vel_ - omega_prev_vel)/dt_;
 
   // Estimate the rotation matrix
-  omega_acceleroAndEncVel_ = acc_vel_.cross(R_vel_.transpose()*(v_encoders_-v_vel_)); //accelero_.cross(R_vel_.transpose()*(v_encoders_-v_vel_));
+  omega_acceleroAndEncVel_ = acc_vel_.cross(R_vel_.transpose()*(v_encoders_-v_vel_));
   const Eigen::Vector3d filtered_omega_vel = omega_vel_ + alpha_rot_vel_ * rot_error_vec + alpha_v_*omega_acceleroAndEncVel_;
-  // R_dot_vel_ = R_vel_ * stateObservation::kine::skewSymmetric(filtered_omega_vel);
   R_vel_ = R_vel_ * stateObservation::kine::rotationVectorToRotationMatrix(filtered_omega_vel*dt_);
 
   // Estimate the acceleration from the velocity
@@ -543,9 +487,6 @@ void CollisionDetectionJerk::jerkEstimationWithLinearVelocity(mc_control::MCGlob
   quat_tilde_vel_ = stateObservation::kine::rotationVectorToQuaternion(stateObservation::kine::rotationMatrixToRotationVector(R_rob_*R_vel_.transpose()));
   // Quaternion of the rotation matrix for logs
   quat_R_vel_ = stateObservation::kine::rotationVectorToQuaternion(stateObservation::kine::rotationMatrixToRotationVector(R_vel_));
-  
-  //TODO APPLY THRESHOLD
-
 }
 
 } // namespace mc_plugin

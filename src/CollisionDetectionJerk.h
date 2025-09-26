@@ -78,10 +78,6 @@ private:
   bool imu_not_yet_initialized_;
 
   // Gains
-  // double k_; // Gyro bias correction gain
-  // double alpha_rot_; // Complementary filter gain for rotation matrix estimation
-  // double alpha_jerk_; // Complementary filter gain for jerk estimation
-
   double k_vel_; // Gyro bias correction gain including the linear velocity
   double alpha_rot_vel_; // Complementary filter gain for rotation matrix estimation from the linear velocity estimation
   double alpha_v_; // Complementary filter gain for the linear velocity part of the rotation matrix estimation
@@ -108,20 +104,7 @@ private:
   // No model estimation
   Eigen::Vector3d jerk_withoutModel_;
   Eigen::Vector3d jerk_diff_; // without model - with velocity
-  // Eigen::Vector3d jerk_dot_withoutModel_; // Estimated jerk derivative
-  // Eigen::Vector3d jerk_withoutModel_noFiltration_; // Estimated jerk without filtering
-  // Eigen::Vector3d jerk_diff_baseNoModel_; // Difference between the jerk estimated with the robot model and without the model
-
-  // // Base estimation
-  // Eigen::Vector3d bias_gyro_base_; // Gyro bias estimate
-  // Eigen::Vector3d bias_gyro_dot_base_; // Gyro bias derivative
-  // Eigen::Matrix3d R_base_; // Estimated rotation matrix
-  // Eigen::Quaternion<double> quat_tilde_base_;
-  // Eigen::Quaternion<double> quat_R_base_;
-  // Eigen::Vector3d omega_base_; // Angular velocity
-  // Eigen::Vector3d jerk_base_; // Estimated jerk = R^T * \dot{a}
-  // Eigen::Vector3d jerk_dot_base_; // Estimated jerk derivative
-  
+    
   // Estimation including the linear velocity
   Eigen::Vector3d bias_gyro_vel_; // Gyro bias derivative including the linear velocity
   Eigen::Vector3d bias_gyro_dot_vel_; // Gyro bias derivative including the linear velocity
