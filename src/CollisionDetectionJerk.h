@@ -54,7 +54,6 @@ private:
   // Algorithm
   double dt_;
   std::string imuBodyName_; // Name of the IMU sensor
-  std::string robotBodyName_;
   bool imu_not_yet_initialized_;
 
   Eigen::Vector3d accelero_;
@@ -63,7 +62,7 @@ private:
   Eigen::Vector3d gyro_;
 
   // No model estimation
-  Eigen::Vector3d jerk_withoutModel_;
+  Eigen::Vector3d jerk_;
 };
 
 } // namespace mc_plugin

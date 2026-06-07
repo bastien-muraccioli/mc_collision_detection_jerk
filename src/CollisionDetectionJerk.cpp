@@ -62,18 +62,17 @@ void CollisionDetectionJerk::before(mc_control::MCGlobalController & controller)
   }
 
   jerkEstimation(ctl);
-  threshold_high_base_ = lpf_threshold_base_.adaptiveThreshold(jerk_withoutModel_, true);
-  threshold_low_base_ = lpf_threshold_base_.adaptiveThreshold(jerk_withoutModel_, false);
+  threshold_high_base_ = lpf_threshold_base_.adaptiveThreshold(jerk_, true);
+  threshold_low_base_ = lpf_threshold_base_.adaptiveThreshold(jerk_, false);
 
   obstacle_detected_ = false;
   // For each axis
   for(int i = 0; i < 3; i++)
   {
-    if(jerk_withoutModel_(i) > threshold_high_base_(i) || jerk_withoutModel_(i) < threshold_low_base_(i))
+    if(jerk_(i) > threshold_high_base_(i) || jerk_(i) < threshold_low_base_(i))
     {
       obstacle_detected_ = true;
-      if(activate_verbose_)
-        mc_rtc::log::info("[CollisionDetectionJerk] Obstacle detected without Robot Model method on axis {}", i);
+      if(activate_verbose_) mc_rtc::log::info("[CollisionDetectionJerk] Obstacle detected on axis {}", i);
       // break;
     }
   }
@@ -128,19 +127,17 @@ void CollisionDetectionJerk::addGui(mc_control::MCGlobalController & controller)
 void CollisionDetectionJerk::addLog(mc_control::MCGlobalController & controller)
 {
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
-  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel",
-                                        [this]() { return jerk_withoutModel_; });
-  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_withoutModel_norm",
-                                        [this]() { return jerk_withoutModel_.norm(); });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk", [this]() { return jerk_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_norm", [this]() { return jerk_.norm(); });
 }
 
 void CollisionDetectionJerk::addPlot(mc_control::MCGlobalController & ctl)
 {
   auto & gui = *ctl.controller().gui();
   gui.addPlot(
-      "jerk without model", mc_rtc::gui::plot::X("t", [this]() { return counter_; }),
+      "jerk", mc_rtc::gui::plot::X("t", [this]() { return counter_; }),
       mc_rtc::gui::plot::Y(
-          "jerk", [this]() { return jerk_withoutModel_[axis_shown_]; }, mc_rtc::gui::Color::Red),
+          "jerk", [this]() { return jerk_[axis_shown_]; }, mc_rtc::gui::Color::Red),
       mc_rtc::gui::plot::Y(
           "threshold_high_base", [this]() { return threshold_high_base_[axis_shown_]; }, mc_rtc::gui::Color::Gray),
       mc_rtc::gui::plot::Y(
@@ -185,7 +182,7 @@ void CollisionDetectionJerk::jerkEstimation(mc_control::MCGlobalController & ctl
   prev_accelero_ = accelero_;
   accelero_ = imu.linearAcceleration();
   accelero_dot_ = (accelero_ - prev_accelero_) / dt_;
-  jerk_withoutModel_ = stateObservation::kine::skewSymmetric(gyro_) * accelero_ + accelero_dot_;
+  jerk_ = stateObservation::kine::skewSymmetric(gyro_) * accelero_ + accelero_dot_;
 }
 
 } // namespace mc_plugin
