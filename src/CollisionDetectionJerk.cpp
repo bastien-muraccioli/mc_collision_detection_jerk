@@ -129,6 +129,16 @@ void CollisionDetectionJerk::addLog(mc_control::MCGlobalController & controller)
   auto & ctl = static_cast<mc_control::MCGlobalController &>(controller);
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk", [this]() { return jerk_; });
   ctl.controller().logger().addLogEntry("CollisionDetectionJerk_jerk_norm", [this]() { return jerk_.norm(); });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_threshold_high_base",
+                                        [this]() { return threshold_high_base_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_threshold_low_base",
+                                        [this]() { return threshold_low_base_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_threshold_offset_base",
+                                        [this]() { return threshold_offset_base_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_threshold_filtering_base",
+                                        [this]() { return threshold_filtering_base_; });
+  ctl.controller().logger().addLogEntry("CollisionDetectionJerk_obstacle_detected",
+                                        [this]() { return obstacle_detected_; });
 }
 
 void CollisionDetectionJerk::addPlot(mc_control::MCGlobalController & ctl)

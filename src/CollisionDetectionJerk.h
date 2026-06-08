@@ -40,7 +40,6 @@ private:
   int axis_shown_ = 0; // x, y, z
   bool activate_plot_ = false;
   bool plot_added_ = false;
-  bool collision_stop_activated_ = false;
   bool obstacle_detected_ = false;
   bool activate_verbose_ = true;
 
@@ -63,6 +62,8 @@ private:
 
   // No model estimation
   Eigen::Vector3d jerk_;
+
+  bool collision_stop_activated_ = false;
 };
 
 } // namespace mc_plugin
